@@ -3,5 +3,5 @@ trello-sync
 .idea
 google-service-account.json
 logs
-build/run.sh
 build/generate-cli.sh
+.envrc

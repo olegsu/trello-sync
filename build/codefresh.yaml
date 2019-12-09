@@ -1,10 +1,5 @@
 version: '1.0'
 
-stages:
-- Build Services
-- Run Pipeline
-
-
 steps:
 
   CloneServices:
@@ -12,9 +7,31 @@ steps:
     repo: olegsu/openc-services
     git: cf_github
     revision: master
-  
+
   BuildServices:
     image: golang
+    working_directory: ${{CloneServices}}
     commands:
     - sh build.sh
   
+  CloneTrelloSync:
+    type: git-clone
+    repo: olegsu/trello-sync
+    git: cf_github
+    revision: ${{CF_REVISION}}
+    
+  ExportGooglCredentials:
+    image: alpine:3.9
+    working_directory: ${{CloneTrelloSync}}
+    commands:
+    - echo $GOOGLE_SERVICE_ACCOUNT | base64 -D - > google-service-account.json
+    - cf_export GOOGLE_SERVICE_ACCOUNT_PATH=${{CF_VOLUME_PATH}}/trello-sync/google-service-account.json
+    - cf_export TRELLO_SERVICE_PATH=${{CF_VOLUME_PATH}}/openc-services/trello/trello
+    - cf_export GOOGLE_SERVICE_PATH=${{CF_VOLUME_PATH}}/openc-services/openc-services/openc-services
+  
+
+  BuildTrelloSync:
+    image: golang
+    working_directory: ${{CloneTrelloSync}}
+    commands:
+    - sh ./build/run.sh
