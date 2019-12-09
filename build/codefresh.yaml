@@ -13,8 +13,8 @@ steps:
     git: cf_github
     revision: master
   
-    BuildServices:
-      image: golang
-      commands:
-      - sh build.sh
-    
+  BuildServices:
+    image: golang
+    commands:
+    - sh build.sh
+  
