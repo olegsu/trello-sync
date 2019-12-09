@@ -1,0 +1,37 @@
+metadata:
+  name: trello-sync
+  description: Sync Trello board to Google Speadsheet
+  version: 0.1.0
+  maintainers:
+    - Oleg Sucharevich
+commands:
+- name: sync
+  loose: false
+  flags:
+    - name: logs
+      description: "Set path to directory where to store task logs"
+      type: string
+    - name: store
+      description: "Set path to directory where to store openc store state"
+      type: string
+    - name: trello-app-key
+      required: true
+      type: string
+    - name: trello-token
+      required: true
+      type: string
+    - name: trello-board-id
+      required: true
+      type: string
+    - name: google-service-account
+      required: true
+      type: string
+    - name: google-spreadsheet-id
+      required: true
+      type: string
+    - name: google-spreadsheet-service
+      required: true
+      type: string
+    - name: trello-service
+      required: true
+      type: string

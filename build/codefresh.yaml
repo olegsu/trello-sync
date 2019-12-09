@@ -1,0 +1,20 @@
+version: '1.0'
+
+stages:
+- Build Services
+- Run Pipeline
+
+
+steps:
+
+  CloneServices:
+    type: git-clone
+    repo: olegsu/openc-services
+    git: cf_github
+    revision: master
+  
+    BuildServices:
+      image: golang
+      commands:
+      - sh build.sh
+    
