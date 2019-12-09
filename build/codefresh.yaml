@@ -27,7 +27,7 @@ steps:
     - echo $GOOGLE_SERVICE_ACCOUNT | base64 -d - > google-service-account.json
     - cf_export GOOGLE_SERVICE_ACCOUNT_PATH=${{CF_VOLUME_PATH}}/trello-sync/google-service-account.json
     - cf_export TRELLO_SERVICE_PATH=${{CF_VOLUME_PATH}}/openc-services/trello/trello
-    - cf_export GOOGLE_SERVICE_PATH=${{CF_VOLUME_PATH}}/openc-services/openc-services/openc-services
+    - cf_export GOOGLE_SERVICE_PATH=${{CF_VOLUME_PATH}}/openc-services/google-spreadsheet/google-spreadsheet
   
 
   BuildTrelloSync:
