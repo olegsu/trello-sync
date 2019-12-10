@@ -74,10 +74,7 @@ type (
 func (g *Handler) Handle(cnf *viper.Viper) error {
 	p := build(cnf)
 	e := openc.NewEngine(&openc.EngineOptions{
-		Pipeline:          *p,
-		WriteStateToFile:  cnf.GetString("store"),
-		TaskLogsDirectory: cnf.GetString("logs"),
-		Dryrun:            cnf.GetBool("dryRun"),
+		Pipeline: *p,
 	})
 	return e.Run()
 }

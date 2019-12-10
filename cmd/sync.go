@@ -11,8 +11,6 @@ import (
 )
 
 var syncCmdOptions struct {
-	logs string
-	store string
 	trelloAppKey string
 	trelloToken string
 	trelloBoardId string
@@ -33,10 +31,6 @@ var syncCmd = &cobra.Command{
 	Long: "Sync Trello board to Google Speadsheet",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.PreRun(cmd, args)
-		
-		cnf.Set("logs", syncCmdOptions.logs)
-		
-		cnf.Set("store", syncCmdOptions.store)
 		
 		cnf.Set("trelloAppKey", syncCmdOptions.trelloAppKey)
 		
@@ -59,12 +53,6 @@ var syncCmd = &cobra.Command{
 
 
 func init() {
-
-	
-	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.logs, "logs", cnf.GetString("logs"), "Set path to directory where to store task logs")
-
-	
-	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.store, "store", cnf.GetString("store"), "Set path to directory where to store openc store state")
 
 	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.trelloAppKey, "trello-app-key", cnf.GetString("trelloAppKey"), "")
 

@@ -8,12 +8,6 @@ commands:
 - name: sync
   loose: false
   flags:
-    - name: logs
-      description: "Set path to directory where to store task logs"
-      type: string
-    - name: store
-      description: "Set path to directory where to store openc store state"
-      type: string
     - name: trello-app-key
       required: true
       type: string
