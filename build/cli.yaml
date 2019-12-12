@@ -23,9 +23,3 @@ commands:
     - name: google-spreadsheet-id
       required: true
       type: string
-    - name: google-spreadsheet-service
-      required: true
-      type: string
-    - name: trello-service
-      required: true
-      type: string

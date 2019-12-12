@@ -16,8 +16,6 @@ var syncCmdOptions struct {
 	trelloBoardId string
 	googleServiceAccount string
 	googleSpreadsheetId string
-	googleSpreadsheetService string
-	trelloService string
 	
 }
 
@@ -42,10 +40,6 @@ var syncCmd = &cobra.Command{
 		
 		cnf.Set("googleSpreadsheetId", syncCmdOptions.googleSpreadsheetId)
 		
-		cnf.Set("googleSpreadsheetService", syncCmdOptions.googleSpreadsheetService)
-		
-		cnf.Set("trelloService", syncCmdOptions.trelloService)
-		
 	},
 }
 
@@ -63,9 +57,5 @@ func init() {
 	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.googleServiceAccount, "google-service-account", cnf.GetString("googleServiceAccount"), "")
 
 	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.googleSpreadsheetId, "google-spreadsheet-id", cnf.GetString("googleSpreadsheetId"), "")
-
-	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.googleSpreadsheetService, "google-spreadsheet-service", cnf.GetString("googleSpreadsheetService"), "")
-
-	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.trelloService, "trello-service", cnf.GetString("trelloService"), "")
 	rootCmd.AddCommand(syncCmd)
 }

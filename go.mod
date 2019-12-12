@@ -3,7 +3,7 @@ module github.com/olegsu/trello-sync
 go 1.13
 
 require (
-	github.com/olegsu/openc v0.18.0
+	github.com/olegsu/openc v0.21.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.5.0
 	github.com/stretchr/testify v1.4.0 // indirect

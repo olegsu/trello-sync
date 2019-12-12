@@ -92,20 +92,14 @@ func buildPipelineSpec(cnf *viper.Viper) openc.PipelineSpec {
 	return openc.PipelineSpec{
 		Services: []openc.Service{
 			openc.Service{
-				Metadata: openc.ServiceMetadata{
-					Name: "TrelloSVC",
-				},
-				Spec: openc.ServiceSpec{
-					Location: cnf.GetString("trelloService"),
-				},
+				Name:    "trello",
+				Version: "0.1.0",
+				As:      "TrelloSVC",
 			},
 			openc.Service{
-				Metadata: openc.ServiceMetadata{
-					Name: "GoogleSVC",
-				},
-				Spec: openc.ServiceSpec{
-					Location: cnf.GetString("googleSpreadsheetService"),
-				},
+				Name:    "google-spreadsheet",
+				Version: "0.1.0",
+				As:      "GoogleSVC",
 			},
 		},
 		Tasks: []openc.Task{

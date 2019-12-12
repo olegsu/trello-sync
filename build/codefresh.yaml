@@ -2,18 +2,6 @@ version: '1.0'
 
 steps:
 
-  CloneServices:
-    type: git-clone
-    repo: olegsu/openc-services
-    git: cf_github
-    revision: master
-
-  BuildServices:
-    image: golang
-    working_directory: ${{CloneServices}}
-    commands:
-    - sh build.sh
-  
   CloneTrelloSync:
     type: git-clone
     repo: olegsu/trello-sync
