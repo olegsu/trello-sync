@@ -93,12 +93,12 @@ func buildPipelineSpec(cnf *viper.Viper) openc.PipelineSpec {
 		Services: []openc.Service{
 			openc.Service{
 				Name:    "trello",
-				Version: "0.1.0",
+				Version: "0.2.0",
 				As:      "TrelloSVC",
 			},
 			openc.Service{
 				Name:    "google-spreadsheet",
-				Version: "0.1.0",
+				Version: "0.2.0",
 				As:      "GoogleSVC",
 			},
 		},
