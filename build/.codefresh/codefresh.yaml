@@ -1,0 +1,21 @@
+version: '1.0'
+
+steps:
+
+  CloneTrelloSync:
+    type: git-clone
+    repo: olegsu/trello-sync
+    git: cf_github
+    revision: ${{CF_REVISION}}
+
+  Build:
+    type: build
+    image_name: olsynt/trello-sync
+    tag: ${{CF_REVISION}}
+    working_directory: ${{CloneTrelloSync}}
+
+  Push:
+    type: push
+    candidate: ${{Build}}
+    tag: latest
+    image_name: olsynt/trello-sync

@@ -21,9 +21,9 @@ type (
 
 	TrelloCard struct {
 		ID               string      `json:"id"`
-		IDShort          int         `json:"idShort"`
+		IDShort          float64     `json:"idShort"`
 		Name             string      `json:"name"`
-		Pos              int         `json:"pos"`
+		Pos              float64     `json:"pos"`
 		Email            string      `json:"email"`
 		ShortLink        string      `json:"shortLink"`
 		ShortURL         string      `json:"shortUrl"`
@@ -60,11 +60,11 @@ type (
 		ManualCoverAttachment bool          `json:"manualCoverAttachment"`
 		IDLabels              []string      `json:"idLabels"`
 		Labels                []struct {
-			ID      string `json:"id"`
-			IDBoard string `json:"idBoard"`
-			Name    string `json:"name"`
-			Color   string `json:"color"`
-			Uses    int    `json:"uses"`
+			ID      string  `json:"id"`
+			IDBoard string  `json:"idBoard"`
+			Name    string  `json:"name"`
+			Color   string  `json:"color"`
+			Uses    float64 `json:"uses"`
 		} `json:"labels"`
 	}
 )
@@ -92,14 +92,16 @@ func buildPipelineSpec(cnf *viper.Viper) core.PipelineSpec {
 	return core.PipelineSpec{
 		Services: []core.Service{
 			core.Service{
-				Name:    "trello",
-				Version: "0.2.0",
-				As:      "TrelloSVC",
+				// Name:    "trello",
+				// Version: "0.4.0",
+				Path: "/Users/olsynt/workspace/personal/open-integration/service-catalog/dist/trello-0.4.0-darwin-amd64",
+				As:   "TrelloSVC",
 			},
 			core.Service{
-				Name:    "google-spreadsheet",
-				Version: "0.2.0",
-				As:      "GoogleSVC",
+				// Name:    "google-spreadsheet",
+				// Version: "0.4.0",
+				Path: "/Users/olsynt/workspace/personal/open-integration/service-catalog/dist/google-spreadsheet-0.4.0-darwin-amd64",
+				As:   "GoogleSVC",
 			},
 		},
 		Tasks: []core.Task{
@@ -224,7 +226,7 @@ func buildSpecFuncGoogleRowsUpsert(googleServiceAccount string, googleSpreadshee
 			now := time.Now()
 			createdAt := now.AddDate(0, 0, -1).Format("02-01-2006 15:04:05")
 			rows = append(rows, &Row{
-				ID: fmt.Sprintf("%d", c.IDShort),
+				ID: fmt.Sprintf("%f", c.IDShort),
 				Data: []string{
 					createdAt,
 					c.DateLastActivity.Format("02-01-2006 15:04:05"),
@@ -235,17 +237,13 @@ func buildSpecFuncGoogleRowsUpsert(googleServiceAccount string, googleSpreadshee
 				},
 			})
 		}
-		data, err := json.Marshal(rows)
-		if err != nil {
-			return nil, err
-		}
 		return &core.TaskSpec{
 			Service:  "GoogleSVC",
 			Endpoint: "Upsert",
 			Arguments: []core.Argument{
 				core.Argument{
 					Key:   "Rows",
-					Value: string(data),
+					Value: rows,
 				},
 				core.Argument{
 					Key:   "ServiceAccount",

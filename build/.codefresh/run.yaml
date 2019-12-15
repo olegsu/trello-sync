@@ -2,11 +2,6 @@ version: '1.0'
 
 steps:
 
-  CloneTrelloSync:
-    type: git-clone
-    repo: olegsu/trello-sync
-    git: cf_github
-    revision: ${{CF_REVISION}}
     
   ExportGooglCredentials:
     image: alpine:3.9
@@ -17,9 +12,3 @@ steps:
     - cf_export TRELLO_SERVICE_PATH=${{CF_VOLUME_PATH}}/openc-services/trello/trello
     - cf_export GOOGLE_SERVICE_PATH=${{CF_VOLUME_PATH}}/openc-services/google-spreadsheet/google-spreadsheet
   
-
-  BuildTrelloSync:
-    image: golang
-    working_directory: ${{CloneTrelloSync}}
-    commands:
-    - sh ./build/run.sh
