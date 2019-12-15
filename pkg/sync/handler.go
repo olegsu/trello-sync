@@ -92,16 +92,14 @@ func buildPipelineSpec(cnf *viper.Viper) core.PipelineSpec {
 	return core.PipelineSpec{
 		Services: []core.Service{
 			core.Service{
-				// Name:    "trello",
-				// Version: "0.4.0",
-				Path: "/Users/olsynt/workspace/personal/open-integration/service-catalog/dist/trello-0.4.0-darwin-amd64",
-				As:   "TrelloSVC",
+				Name:    "trello",
+				Version: "0.5.0",
+				As:      "TrelloSVC",
 			},
 			core.Service{
-				// Name:    "google-spreadsheet",
-				// Version: "0.4.0",
-				Path: "/Users/olsynt/workspace/personal/open-integration/service-catalog/dist/google-spreadsheet-0.4.0-darwin-amd64",
-				As:   "GoogleSVC",
+				Name:    "google-spreadsheet",
+				Version: "0.5.0",
+				As:      "GoogleSVC",
 			},
 		},
 		Tasks: []core.Task{
