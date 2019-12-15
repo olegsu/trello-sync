@@ -1,4 +1,4 @@
-FROM golang:1.13 AS godev
+FROM golang:1.13.5-alpine3.10 AS godev
 
 WORKDIR /trello-sync
 
