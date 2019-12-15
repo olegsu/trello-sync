@@ -1,5 +1,7 @@
 FROM golang:1.13.5-alpine3.10 AS godev
 
+RUN apk update && apk add --no-cache ca-certificates && apk upgrade && apk add git
+
 WORKDIR /trello-sync
 
 COPY . .
