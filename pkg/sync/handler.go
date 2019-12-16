@@ -93,12 +93,12 @@ func buildPipelineSpec(cnf *viper.Viper) core.PipelineSpec {
 		Services: []core.Service{
 			core.Service{
 				Name:    "trello",
-				Version: "0.5.0",
+				Version: "0.6.0",
 				As:      "TrelloSVC",
 			},
 			core.Service{
 				Name:    "google-spreadsheet",
-				Version: "0.5.0",
+				Version: "0.6.0",
 				As:      "GoogleSVC",
 			},
 		},
@@ -292,7 +292,7 @@ func buildSpecFunncArchiveTrelloCards(trelloAppKey string, trelloToken string, t
 				},
 				core.Argument{
 					Key:   "CardIDs",
-					Value: strings.Join(cardids, ","),
+					Value: cardids,
 				},
 			},
 		}, nil
