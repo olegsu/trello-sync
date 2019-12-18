@@ -224,7 +224,7 @@ func buildSpecFuncGoogleRowsUpsert(googleServiceAccount string, googleSpreadshee
 			now := time.Now()
 			createdAt := now.AddDate(0, 0, -1).Format("02-01-2006 15:04:05")
 			rows = append(rows, &Row{
-				ID: fmt.Sprintf("%f", c.IDShort),
+				ID: fmt.Sprintf("%.f", c.IDShort),
 				Data: []string{
 					createdAt,
 					c.DateLastActivity.Format("02-01-2006 15:04:05"),
