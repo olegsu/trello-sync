@@ -93,7 +93,7 @@ func buildPipelineSpec(cnf *viper.Viper) core.PipelineSpec {
 		Services: []core.Service{
 			core.Service{
 				Name:    "trello",
-				Version: "0.6.0",
+				Version: "0.7.0",
 				As:      "TrelloSVC",
 			},
 			core.Service{
@@ -185,7 +185,7 @@ func load(j string) ([]*TrelloCard, error) {
 func buildSpecTaskTrelloSync(trelloAppKey string, trelloToken string, trelloBoardID string) core.TaskSpec {
 	return core.TaskSpec{
 		Service:  "TrelloSVC",
-		Endpoint: "GetCards",
+		Endpoint: "getcards",
 		Arguments: []core.Argument{
 			core.Argument{
 				Key:   "App",
@@ -276,7 +276,7 @@ func buildSpecFunncArchiveTrelloCards(trelloAppKey string, trelloToken string, t
 		}
 		return &core.TaskSpec{
 			Service:  "TrelloSVC",
-			Endpoint: "ArchiveCard",
+			Endpoint: "archivecards",
 			Arguments: []core.Argument{
 				core.Argument{
 					Key:   "App",
