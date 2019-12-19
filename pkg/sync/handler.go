@@ -237,7 +237,7 @@ func buildSpecFuncGoogleRowsUpsert(googleServiceAccount string, googleSpreadshee
 		}
 		return &core.TaskSpec{
 			Service:  "GoogleSVC",
-			Endpoint: "Upsert",
+			Endpoint: "upsert",
 			Arguments: []core.Argument{
 				core.Argument{
 					Key:   "Rows",
