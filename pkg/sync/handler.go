@@ -2,7 +2,7 @@ package sync
 
 import (
 	"encoding/json"
-	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -98,7 +98,7 @@ func buildPipelineSpec(cnf *viper.Viper) core.PipelineSpec {
 			},
 			core.Service{
 				Name:    "google-spreadsheet",
-				Version: "0.6.0",
+				Version: "0.7.0",
 				As:      "GoogleSVC",
 			},
 		},
@@ -223,8 +223,10 @@ func buildSpecFuncGoogleRowsUpsert(googleServiceAccount string, googleSpreadshee
 			}
 			now := time.Now()
 			createdAt := now.AddDate(0, 0, -1).Format("02-01-2006 15:04:05")
+
+			id := strconv.Itoa(int(c.IDShort))
 			rows = append(rows, &Row{
-				ID: fmt.Sprintf("%.f", c.IDShort),
+				ID: id,
 				Data: []string{
 					createdAt,
 					c.DateLastActivity.Format("02-01-2006 15:04:05"),

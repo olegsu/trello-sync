@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/mattn/go-isatty v0.0.11 // indirect
-	github.com/open-integration/core v0.8.0
+	github.com/open-integration/core v0.13.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.5.0
 	github.com/stretchr/testify v1.4.0 // indirect

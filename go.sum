@@ -91,6 +91,8 @@ github.com/open-integration/core v0.6.0 h1:IxD6d8F7jIG8Fd7HjQHEuyO78TLAX2zthSgYC
 github.com/open-integration/core v0.6.0/go.mod h1:MNc9B+DbUPAG36KT401aGMXJOTitXg19KkdXCuwG168=
 github.com/open-integration/core v0.8.0 h1:7TtbUx9HC/BAHzauE8GAlEENAV+ZNrnGL0VlqP60mQk=
 github.com/open-integration/core v0.8.0/go.mod h1:MNc9B+DbUPAG36KT401aGMXJOTitXg19KkdXCuwG168=
+github.com/open-integration/core v0.13.0 h1:8AmeIpDU4+TWxogJso0fdnklBroUJ6GOt96MfM5j+Gc=
+github.com/open-integration/core v0.13.0/go.mod h1:MNc9B+DbUPAG36KT401aGMXJOTitXg19KkdXCuwG168=
 github.com/pelletier/go-toml v1.2.0 h1:T5zMGML61Wp+FlcbWjRDT7yAxhJNAiPPLOFECq181zc=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
