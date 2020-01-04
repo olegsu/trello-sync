@@ -1,5 +1,5 @@
 echo "Cleaning old logs directory"
-rm -rf /Users/olsynt/workspace/personal/trello-sync/logs/* || true
+rm -rf $PWD/logs/* || true
 echo "Building binary"
 go build -o trello-sync .
 echo "Running..."
