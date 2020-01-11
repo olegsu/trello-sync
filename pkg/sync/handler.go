@@ -2,11 +2,13 @@ package sync
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/open-integration/core"
+	upsert "github.com/open-integration/service-catalog/google-spreadsheet/pkg/endpoints/upsert"
 	"github.com/spf13/viper"
 )
 
@@ -72,10 +74,22 @@ type (
 // Handle - the function that will be called from the CLI with viper config
 // to provide access to all flags
 func (g *Handler) Handle(cnf *viper.Viper) error {
+	var kube *struct {
+		Path      string
+		Context   string
+		Namespace string
+	}
 	p := build(cnf)
-	e := core.NewEngine(&core.EngineOptions{
+	opt := &core.EngineOptions{
 		Pipeline: *p,
-	})
+	}
+	if cnf.GetString("kubernetesKubeconfigPath") != "" && cnf.GetString("kubernetesNamespace") != "" && cnf.GetString("kubernetesContext") != "" {
+		kube.Path = cnf.GetString("kubernetesKubeconfigPath")
+		kube.Context = cnf.GetString("kubernetesContext")
+		kube.Namespace = cnf.GetString("kubernetesNamespace")
+		opt.Kubeconfig = kube
+	}
+	e := core.NewEngine(opt)
 	return e.Run()
 }
 
@@ -93,12 +107,12 @@ func buildPipelineSpec(cnf *viper.Viper) core.PipelineSpec {
 		Services: []core.Service{
 			core.Service{
 				Name:    "trello",
-				Version: "0.7.0",
+				Version: "0.9.0",
 				As:      "TrelloSVC",
 			},
 			core.Service{
 				Name:    "google-spreadsheet",
-				Version: "0.7.0",
+				Version: "0.10.0",
 				As:      "GoogleSVC",
 			},
 		},
@@ -115,7 +129,7 @@ func buildPipelineSpec(cnf *viper.Viper) core.PipelineSpec {
 				Metadata: buildTaskMetadata("Update Google Spreadsheet"),
 				Condition: &core.Condition{
 					Name: "Fetch Cards From Trello Finished",
-					Func: conditionTaskFinished("Fetch Cards From Trello"),
+					Func: conditionTaskFinishedWithStatus("Fetch Cards From Trello", core.TaskStatusSuccess),
 				},
 				SpecFunc: buildSpecFuncGoogleRowsUpsert(cnf.GetString("googleServiceAccount"), cnf.GetString("googleSpreadsheetId")),
 			},
@@ -204,6 +218,19 @@ func buildSpecTaskTrelloSync(trelloAppKey string, trelloToken string, trelloBoar
 }
 
 func buildSpecFuncGoogleRowsUpsert(googleServiceAccount string, googleSpreadsheetID string) func(state *core.State) (*core.TaskSpec, error) {
+	f, err := ioutil.ReadFile(googleServiceAccount)
+	if err != nil {
+		return func(state *core.State) (*core.TaskSpec, error) {
+			return nil, err
+		}
+	}
+	sa := &upsert.ServiceAccount{}
+	err = json.Unmarshal(f, &sa)
+	if err != nil {
+		return func(state *core.State) (*core.TaskSpec, error) {
+			return nil, err
+		}
+	}
 	return func(state *core.State) (*core.TaskSpec, error) {
 		output := ""
 		for _, t := range state.Tasks {
@@ -247,7 +274,7 @@ func buildSpecFuncGoogleRowsUpsert(googleServiceAccount string, googleSpreadshee
 				},
 				core.Argument{
 					Key:   "ServiceAccount",
-					Value: googleServiceAccount,
+					Value: sa,
 				},
 				core.Argument{
 					Key:   "SpreadsheetID",

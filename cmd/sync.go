@@ -16,6 +16,9 @@ var syncCmdOptions struct {
 	trelloBoardId string
 	googleServiceAccount string
 	googleSpreadsheetId string
+	kubernetesContext string
+	kubernetesNamespace string
+	kubernetesKubeconfigPath string
 	
 }
 
@@ -40,6 +43,12 @@ var syncCmd = &cobra.Command{
 		
 		cnf.Set("googleSpreadsheetId", syncCmdOptions.googleSpreadsheetId)
 		
+		cnf.Set("kubernetesContext", syncCmdOptions.kubernetesContext)
+		
+		cnf.Set("kubernetesNamespace", syncCmdOptions.kubernetesNamespace)
+		
+		cnf.Set("kubernetesKubeconfigPath", syncCmdOptions.kubernetesKubeconfigPath)
+		
 	},
 }
 
@@ -57,5 +66,11 @@ func init() {
 	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.googleServiceAccount, "google-service-account", cnf.GetString("googleServiceAccount"), "")
 
 	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.googleSpreadsheetId, "google-spreadsheet-id", cnf.GetString("googleSpreadsheetId"), "")
+
+	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.kubernetesContext, "kubernetes-context", cnf.GetString("kubernetesContext"), "")
+
+	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.kubernetesNamespace, "kubernetes-namespace", cnf.GetString("kubernetesNamespace"), "")
+
+	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.kubernetesKubeconfigPath, "kubernetes-kubeconfig-path", cnf.GetString("kubernetesKubeconfigPath"), "")
 	rootCmd.AddCommand(syncCmd)
 }
