@@ -7,7 +7,7 @@ require (
 	github.com/googleapis/gnostic v0.3.1 // indirect
 	github.com/inconshreveable/log15 v0.0.0-20200109203555-b30bc20e4fd1 // indirect
 	github.com/json-iterator/go v1.1.9 // indirect
-	github.com/open-integration/core v0.23.0
+	github.com/open-integration/core v0.24.0
 	github.com/open-integration/service-catalog/google-spreadsheet v0.10.0
 	github.com/pelletier/go-toml v1.6.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect

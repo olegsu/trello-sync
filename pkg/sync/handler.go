@@ -74,26 +74,22 @@ type (
 // Handle - the function that will be called from the CLI with viper config
 // to provide access to all flags
 func (g *Handler) Handle(cnf *viper.Viper) error {
-	var kube *struct {
-		Path      string
-		Context   string
-		Namespace string
-		InCluster bool
-	}
 	p := build(cnf)
 	opt := &core.EngineOptions{
 		Pipeline: *p,
 	}
 	if cnf.GetString("kubernetesKubeconfigPath") != "" && cnf.GetString("kubernetesNamespace") != "" && cnf.GetString("kubernetesContext") != "" {
-		kube.Path = cnf.GetString("kubernetesKubeconfigPath")
-		kube.Context = cnf.GetString("kubernetesContext")
-		kube.Namespace = cnf.GetString("kubernetesNamespace")
-		opt.Kubeconfig = kube
+		opt.Kubeconfig = &core.EngineKubernetesOptions{
+			Path:      cnf.GetString("kubernetesKubeconfigPath"),
+			Context:   cnf.GetString("kubernetesContext"),
+			Namespace: cnf.GetString("kubernetesNamespace"),
+		}
 	}
 
 	if cnf.GetBool("kubernetesInCluster") {
-		kube.InCluster = true
-		opt.Kubeconfig = kube
+		opt.Kubeconfig = &core.EngineKubernetesOptions{
+			InCluster: true,
+		}
 	}
 
 	e := core.NewEngine(opt)
