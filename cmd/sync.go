@@ -19,6 +19,7 @@ var syncCmdOptions struct {
 	kubernetesContext string
 	kubernetesNamespace string
 	kubernetesKubeconfigPath string
+	kubernetesInCluster bool
 	
 }
 
@@ -49,6 +50,8 @@ var syncCmd = &cobra.Command{
 		
 		cnf.Set("kubernetesKubeconfigPath", syncCmdOptions.kubernetesKubeconfigPath)
 		
+		cnf.Set("kubernetesInCluster", syncCmdOptions.kubernetesInCluster)
+		
 	},
 }
 
@@ -72,5 +75,7 @@ func init() {
 	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.kubernetesNamespace, "kubernetes-namespace", cnf.GetString("kubernetesNamespace"), "")
 
 	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.kubernetesKubeconfigPath, "kubernetes-kubeconfig-path", cnf.GetString("kubernetesKubeconfigPath"), "")
+
+	syncCmd.PersistentFlags().BoolVar(&syncCmdOptions.kubernetesInCluster, "kubernetes-in-cluster", cnf.GetBool("kubernetesInCluster"), "")
 	rootCmd.AddCommand(syncCmd)
 }

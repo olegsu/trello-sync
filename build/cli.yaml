@@ -29,3 +29,5 @@ commands:
       type: string
     - name: kubernetes-kubeconfig-path
       type: string
+    - name: kubernetes-in-cluster
+      type: bool

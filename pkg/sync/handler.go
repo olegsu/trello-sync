@@ -78,6 +78,7 @@ func (g *Handler) Handle(cnf *viper.Viper) error {
 		Path      string
 		Context   string
 		Namespace string
+		InCluster bool
 	}
 	p := build(cnf)
 	opt := &core.EngineOptions{
@@ -89,6 +90,12 @@ func (g *Handler) Handle(cnf *viper.Viper) error {
 		kube.Namespace = cnf.GetString("kubernetesNamespace")
 		opt.Kubeconfig = kube
 	}
+
+	if cnf.GetBool("kubernetesInCluster") {
+		kube.InCluster = true
+		opt.Kubeconfig = kube
+	}
+
 	e := core.NewEngine(opt)
 	return e.Run()
 }
