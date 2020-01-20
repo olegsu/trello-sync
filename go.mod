@@ -26,5 +26,3 @@ require (
 )
 
 replace gopkg.in/hairyhenderson/yaml.v2 => github.com/maxaudron/yaml v0.0.0-20190411130442-27c13492fe3
-
-replace github.com/open-integration/core => ../../open-integration/core
