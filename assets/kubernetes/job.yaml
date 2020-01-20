@@ -1,0 +1,71 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: trello-sync
+  name: trello-sync
+spec:
+  backoffLimit: 0
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      labels:
+        app: trello-sync
+      name: trello-sync
+    spec:
+      restartPolicy: Never
+      volumes:
+      - name: "google-service-account"
+        secret:
+          secretName: "trello-sync"
+          items:
+          - key: google-service-account-b64
+            path: ./google-service-account-b64
+      - name: "host"
+        emptyDir: {}
+      initContainers:
+        - name: "decode-service-account"
+          image: alpine:3.9
+          command:
+            - sh
+            - -c
+            - "cat \"/google-service-account/google-service-account-b64\" | base64 -d - > /host/google-service-account.json"
+          volumeMounts:
+            - name: google-service-account
+              mountPath: "/google-service-account"
+            - name: host
+              mountPath: "/host"
+      containers:
+      - name: root
+        command:
+        - ./trello-sync
+        - sync --trello-app-key $TRELLO_APP_KEY --trello-token $TRELLO_TOKEN --trello-board-id $TRELLO_BOARD_ID --google-service-account $GOOGLE_SERVICE_ACCOUNT_PATH --google-spreadsheet-id $GOOGLE_SPREADSHEET_ID --kubernetes-in-cluster
+        image: olsynt/trello-sync
+        imagePullPolicy: Always
+        env:
+        - name: GOOGLE_SERVICE_ACCOUNT_PATH
+          value: /service-account.json
+        - name: GOOGLE_SPREADSHEET_ID
+          valueFrom:
+            secretKeyRef:
+              name: "trello-sync"
+              key: "google-spreadsheet-id"
+        - name: TRELLO_APP_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "trello-sync"
+              key: "trello-app-key"
+        - name: TRELLO_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: "trello-sync"
+              key: "trello-token"
+        - name: TRELLO_BOARD_ID
+          valueFrom:
+            secretKeyRef:
+              name: "trello-sync"
+              key: "trello-board-id"
+        volumeMounts:
+          - name: host
+            mountPath: "/host"
