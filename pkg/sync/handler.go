@@ -87,8 +87,13 @@ func (g *Handler) Handle(cnf *viper.Viper) error {
 	}
 
 	if cnf.GetBool("kubernetesInCluster") {
+		namespace := "default"
+		if cnf.GetString("kubernetesNamespace") != "" {
+			namespace = cnf.GetString("kubernetesNamespace")
+		}
 		opt.Kubeconfig = &core.EngineKubernetesOptions{
 			InCluster: true,
+			Namespace: namespace,
 		}
 	}
 
