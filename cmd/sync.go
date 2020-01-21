@@ -59,16 +59,21 @@ var syncCmd = &cobra.Command{
 
 
 func init() {
+	cnf.BindEnv("trello-app-key", "$TRELLO_APP_KEY")
 
-	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.trelloAppKey, "trello-app-key", cnf.GetString("trelloAppKey"), "")
+	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.trelloAppKey, "trello-app-key", cnf.GetString("trelloAppKey"), " [$$TRELLO_APP_KEY]")
+	cnf.BindEnv("trello-token", "$TRELLO_TOKEN")
 
-	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.trelloToken, "trello-token", cnf.GetString("trelloToken"), "")
+	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.trelloToken, "trello-token", cnf.GetString("trelloToken"), " [$$TRELLO_TOKEN]")
+	cnf.BindEnv("trello-board-id", "$TRELLO_BOARD_ID")
 
-	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.trelloBoardId, "trello-board-id", cnf.GetString("trelloBoardId"), "")
+	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.trelloBoardId, "trello-board-id", cnf.GetString("trelloBoardId"), " [$$TRELLO_BOARD_ID]")
+	cnf.BindEnv("google-service-account", "$GOOGLE_SERVICE_ACCOUNT_PATH")
 
-	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.googleServiceAccount, "google-service-account", cnf.GetString("googleServiceAccount"), "")
+	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.googleServiceAccount, "google-service-account", cnf.GetString("googleServiceAccount"), " [$$GOOGLE_SERVICE_ACCOUNT_PATH]")
+	cnf.BindEnv("google-spreadsheet-id", "$GOOGLE_SPREADSHEET_ID")
 
-	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.googleSpreadsheetId, "google-spreadsheet-id", cnf.GetString("googleSpreadsheetId"), "")
+	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.googleSpreadsheetId, "google-spreadsheet-id", cnf.GetString("googleSpreadsheetId"), " [$$GOOGLE_SPREADSHEET_ID]")
 
 	syncCmd.PersistentFlags().StringVar(&syncCmdOptions.kubernetesContext, "kubernetes-context", cnf.GetString("kubernetesContext"), "")
 

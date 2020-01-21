@@ -39,9 +39,9 @@ spec:
       containers:
       - name: root
         command:
-        - sleep
-        - "180"
-        # - ./trello-sync sync --trello-app-key $TRELLO_APP_KEY --trello-token $TRELLO_TOKEN --trello-board-id $TRELLO_BOARD_ID --google-service-account $GOOGLE_SERVICE_ACCOUNT_PATH --google-spreadsheet-id $GOOGLE_SPREADSHEET_ID --kubernetes-in-cluster
+        - ./trello-sync
+        - sync
+        - --kubernetes-in-cluster
         image: olsynt/trello-sync
         imagePullPolicy: Always
         env:
