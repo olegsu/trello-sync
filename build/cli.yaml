@@ -11,23 +11,23 @@ commands:
     - name: trello-app-key
       required: true
       type: string
-      envVar: $TRELLO_APP_KEY
+      envVar: TRELLO_APP_KEY
     - name: trello-token
       required: true
       type: string
-      envVar: $TRELLO_TOKEN
+      envVar: TRELLO_TOKEN
     - name: trello-board-id
       required: true
       type: string
-      envVar: $TRELLO_BOARD_ID
+      envVar: TRELLO_BOARD_ID
     - name: google-service-account
       required: true
       type: string
-      envVar: $GOOGLE_SERVICE_ACCOUNT_PATH
+      envVar: GOOGLE_SERVICE_ACCOUNT_PATH
     - name: google-spreadsheet-id
       required: true
       type: string
-      envVar: $GOOGLE_SPREADSHEET_ID
+      envVar: GOOGLE_SPREADSHEET_ID
     - name: kubernetes-context
       type: string
     - name: kubernetes-namespace
