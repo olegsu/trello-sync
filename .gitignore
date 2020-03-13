@@ -5,3 +5,6 @@ google-service-account.json
 logs
 build/generate-cli.sh
 .envrc
+events.yaml
+state.yaml
+graph.dot

@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/open-integration/core"
+	"github.com/open-integration/core/pkg/state"
+	"github.com/open-integration/core/pkg/task"
 	upsert "github.com/open-integration/service-catalog/google-spreadsheet/pkg/endpoints/upsert"
 	"github.com/spf13/viper"
 )
@@ -124,74 +126,62 @@ func buildPipelineSpec(cnf *viper.Viper) core.PipelineSpec {
 				As:      "GoogleSVC",
 			},
 		},
-		Tasks: []core.Task{
-			core.Task{
-				Metadata: buildTaskMetadata("Fetch Cards From Trello"),
-				Condition: &core.Condition{
-					Name: "Engine started",
-					Func: conditionOnEngineStarted(),
+		Reactions: []core.EventReaction{
+			core.EventReaction{
+				Condition: core.ConditionEngineStarted,
+				Reaction: func(ev state.Event, state state.State) []task.Task {
+					return []task.Task{
+						task.Task{
+							Metadata: buildTaskMetadata("Fetch Cards From Trello"),
+							Spec:     buildSpecTaskTrelloSync(cnf.GetString("trelloAppKey"), cnf.GetString("trelloToken"), cnf.GetString("trelloBoardId")),
+						},
+					}
 				},
-				Spec: buildSpecTaskTrelloSync(cnf.GetString("trelloAppKey"), cnf.GetString("trelloToken"), cnf.GetString("trelloBoardId")),
 			},
-			core.Task{
-				Metadata: buildTaskMetadata("Update Google Spreadsheet"),
-				Condition: &core.Condition{
-					Name: "Fetch Cards From Trello Finished",
-					Func: conditionTaskFinishedWithStatus("Fetch Cards From Trello", core.TaskStatusSuccess),
+			core.EventReaction{
+				Condition: core.ConditionTaskFinishedWithStatus("Fetch Cards From Trello", state.TaskStatusSuccess),
+				Reaction: func(ev state.Event, state state.State) []task.Task {
+					spec, err := buildSpecFuncGoogleRowsUpsert(cnf.GetString("googleServiceAccount"), cnf.GetString("googleSpreadsheetId"))(state)
+					if err != nil {
+						return []task.Task{}
+					}
+					return []task.Task{
+						task.Task{
+							Metadata: buildTaskMetadata("Update Google Spreadsheet"),
+							Spec:     *spec,
+						},
+					}
 				},
-				SpecFunc: buildSpecFuncGoogleRowsUpsert(cnf.GetString("googleServiceAccount"), cnf.GetString("googleSpreadsheetId")),
 			},
-			core.Task{
-				Metadata: buildTaskMetadata("Archive sync cards"),
-				Condition: &core.Condition{
-					Name: "Upsert rows completed successfuly",
-					Func: conditionTaskFinishedWithStatus("Update Google Spreadsheet", core.TaskStatusSuccess),
+			core.EventReaction{
+				Condition: core.ConditionTaskFinishedWithStatus("Update Google Spreadsheet", state.TaskStatusSuccess),
+				Reaction: func(ev state.Event, state state.State) []task.Task {
+					spec, err := buildSpecFunncArchiveTrelloCards(cnf.GetString("trelloAppKey"), cnf.GetString("trelloToken"), cnf.GetString("trelloBoardId"))(state)
+					if err != nil {
+						return []task.Task{}
+					}
+					return []task.Task{
+						task.Task{
+							Metadata: buildTaskMetadata("Archive sync cards"),
+							Spec:     *spec,
+						},
+					}
 				},
-				SpecFunc: buildSpecFunncArchiveTrelloCards(cnf.GetString("trelloAppKey"), cnf.GetString("trelloToken"), cnf.GetString("trelloBoardId")),
 			},
 		},
 	}
 }
 
-func buildTaskMetadata(name string) core.TaskMetadata {
-	return core.TaskMetadata{
+func buildTaskMetadata(name string) task.Metadata {
+	return task.Metadata{
 		Name: name,
 	}
 }
 
-func buildTask(name string, condition *core.Condition, spec *core.TaskSpec) core.Task {
-	return core.Task{
-		Metadata:  buildTaskMetadata(name),
-		Condition: condition,
-		Spec:      *spec,
-	}
-}
-
-func conditionOnEngineStarted() func(ev *core.Event, state *core.State) bool {
-	return func(ev *core.Event, state *core.State) bool {
-		return ev.Metadata.Name == "engine.started"
-	}
-}
-
-func conditionTaskFinished(task string) func(ev *core.Event, state *core.State) bool {
-	return func(ev *core.Event, state *core.State) bool {
-		for _, t := range state.Tasks {
-			if t.State == "finished" && t.Task == task {
-				return true
-			}
-		}
-		return false
-	}
-}
-
-func conditionTaskFinishedWithStatus(task string, status string) func(ev *core.Event, state *core.State) bool {
-	return func(ev *core.Event, state *core.State) bool {
-		for _, t := range state.Tasks {
-			if t.Status == status && t.State == "finished" && t.Task == task {
-				return true
-			}
-		}
-		return false
+func buildTask(name string, spec *task.Spec) task.Task {
+	return task.Task{
+		Metadata: buildTaskMetadata(name),
+		Spec:     *spec,
 	}
 }
 
@@ -204,20 +194,20 @@ func load(j string) ([]*TrelloCard, error) {
 	return cards, nil
 }
 
-func buildSpecTaskTrelloSync(trelloAppKey string, trelloToken string, trelloBoardID string) core.TaskSpec {
-	return core.TaskSpec{
+func buildSpecTaskTrelloSync(trelloAppKey string, trelloToken string, trelloBoardID string) task.Spec {
+	return task.Spec{
 		Service:  "TrelloSVC",
 		Endpoint: "getcards",
-		Arguments: []core.Argument{
-			core.Argument{
+		Arguments: []task.Argument{
+			task.Argument{
 				Key:   "App",
 				Value: trelloAppKey,
 			},
-			core.Argument{
+			task.Argument{
 				Key:   "Token",
 				Value: trelloToken,
 			},
-			core.Argument{
+			task.Argument{
 				Key:   "Board",
 				Value: trelloBoardID,
 			},
@@ -225,24 +215,24 @@ func buildSpecTaskTrelloSync(trelloAppKey string, trelloToken string, trelloBoar
 	}
 }
 
-func buildSpecFuncGoogleRowsUpsert(googleServiceAccount string, googleSpreadsheetID string) func(state *core.State) (*core.TaskSpec, error) {
+func buildSpecFuncGoogleRowsUpsert(googleServiceAccount string, googleSpreadsheetID string) func(state state.State) (*task.Spec, error) {
 	f, err := ioutil.ReadFile(googleServiceAccount)
 	if err != nil {
-		return func(state *core.State) (*core.TaskSpec, error) {
+		return func(state state.State) (*task.Spec, error) {
 			return nil, err
 		}
 	}
 	sa := &upsert.ServiceAccount{}
 	err = json.Unmarshal(f, &sa)
 	if err != nil {
-		return func(state *core.State) (*core.TaskSpec, error) {
+		return func(state state.State) (*task.Spec, error) {
 			return nil, err
 		}
 	}
-	return func(state *core.State) (*core.TaskSpec, error) {
+	return func(state state.State) (*task.Spec, error) {
 		output := ""
-		for _, t := range state.Tasks {
-			if t.Task == "Fetch Cards From Trello" {
+		for _, t := range state.Tasks() {
+			if t.Task.Metadata.Name == "Fetch Cards From Trello" {
 				output = t.Output
 			}
 		}
@@ -272,19 +262,19 @@ func buildSpecFuncGoogleRowsUpsert(googleServiceAccount string, googleSpreadshee
 				},
 			})
 		}
-		return &core.TaskSpec{
+		return &task.Spec{
 			Service:  "GoogleSVC",
 			Endpoint: "upsert",
-			Arguments: []core.Argument{
-				core.Argument{
+			Arguments: []task.Argument{
+				task.Argument{
 					Key:   "Rows",
 					Value: rows,
 				},
-				core.Argument{
+				task.Argument{
 					Key:   "ServiceAccount",
 					Value: sa,
 				},
-				core.Argument{
+				task.Argument{
 					Key:   "SpreadsheetID",
 					Value: googleSpreadsheetID,
 				},
@@ -293,11 +283,11 @@ func buildSpecFuncGoogleRowsUpsert(googleServiceAccount string, googleSpreadshee
 	}
 }
 
-func buildSpecFunncArchiveTrelloCards(trelloAppKey string, trelloToken string, trelloBoardID string) func(state *core.State) (*core.TaskSpec, error) {
-	return func(state *core.State) (*core.TaskSpec, error) {
+func buildSpecFunncArchiveTrelloCards(trelloAppKey string, trelloToken string, trelloBoardID string) func(state state.State) (*task.Spec, error) {
+	return func(state state.State) (*task.Spec, error) {
 		output := ""
-		for _, t := range state.Tasks {
-			if t.Task == "Fetch Cards From Trello" {
+		for _, t := range state.Tasks() {
+			if t.Task.Metadata.Name == "Fetch Cards From Trello" {
 				output = t.Output
 			}
 		}
@@ -311,23 +301,23 @@ func buildSpecFunncArchiveTrelloCards(trelloAppKey string, trelloToken string, t
 				cardids = append(cardids, card.ID)
 			}
 		}
-		return &core.TaskSpec{
+		return &task.Spec{
 			Service:  "TrelloSVC",
 			Endpoint: "archivecards",
-			Arguments: []core.Argument{
-				core.Argument{
+			Arguments: []task.Argument{
+				task.Argument{
 					Key:   "App",
 					Value: trelloAppKey,
 				},
-				core.Argument{
+				task.Argument{
 					Key:   "Token",
 					Value: trelloToken,
 				},
-				core.Argument{
+				task.Argument{
 					Key:   "Board",
 					Value: trelloBoardID,
 				},
-				core.Argument{
+				task.Argument{
 					Key:   "CardIDs",
 					Value: cardids,
 				},
